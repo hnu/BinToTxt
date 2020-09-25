@@ -26,6 +26,31 @@ namespace RestoreOriginal
         string [,] data;
         int    [,] dataOffsets;
 
+        // we need to swap characters due to little endian vs big endian issues
+        string myUnicodeDecode(byte[] bytes){
+            int i = 0;
+            string r = "";
+            while(i < bytes.Length){
+                if((bytes[i] & 0x80) != 0){ // is this a two bytes char?
+                   // byte tmp = bytes[i];
+                   // bytes[i] = bytes[i+1];
+                   // bytes[i+1] = tmp;
+                    byte[] twoBytes = {bytes[i+1], bytes[i]};
+                   // twoBytes[0] = bytes[i+1];
+                   // twoBytes[1] = 0;//bytes[i];
+                    string s = System.Text.Encoding.Unicode.GetString(twoBytes);
+                    i += 2;
+                    r += s;
+                } else {
+                    r += (char)bytes[i];
+                    i++;
+                }
+            }
+
+           return r;//System.Text.Encoding.Unicode.GetString(bytes);
+       }
+
+
         public void read(string fname, string fname_out){
             byte[] fileBytes = File.ReadAllBytes(fname);
 
@@ -47,7 +72,7 @@ namespace RestoreOriginal
                     fieldNameBytes[k] = fileBytes[offset + k];
                 }
 
-                string result = System.Text.Encoding.UTF8.GetString(fieldNameBytes);
+                string result = myUnicodeDecode(fieldNameBytes);
                 fieldNames[i] = result;
 
                 Console.WriteLine("Field "+i+", name: " + result + ", type: " + fieldType);
@@ -95,7 +120,8 @@ namespace RestoreOriginal
             for(int i = 0; byteArray[offset + i]!='\0'; i++, l++);
             byte[] sBytes = new byte[l];
             for(int i = 0; byteArray[offset + i]!='\0'; i++) sBytes[i] = byteArray[offset + i];
-            String s = System.Text.Encoding.UTF8.GetString(sBytes);
+            String s = myUnicodeDecode(sBytes);
+            //System.Text.Encoding.Unicode.GetString(sBytes);
 
             return s;
         }

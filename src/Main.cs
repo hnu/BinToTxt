@@ -10,6 +10,7 @@ namespace RestoreOriginal
     {
     static void Main(string[] args)
     {
+        Console.WriteLine("BinToText converts all bin files to txt files in the given Directory.");
         if(args.Count() != 2){
 
             } else {
