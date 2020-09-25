@@ -26,7 +26,7 @@ namespace RestoreOriginal
         string [,] data;
         int    [,] dataOffsets;
 
-        public void read(string fname){
+        public void read(string fname, string fname_out){
             byte[] fileBytes = File.ReadAllBytes(fname);
 
             nFields = int16(fileBytes, 0);
@@ -72,7 +72,7 @@ namespace RestoreOriginal
             Console.WriteLine(dataOffsets[nEntries-1, nFields-1]);
 
             using (System.IO.StreamWriter file =
-            new System.IO.StreamWriter(@"test.txt"))
+            new System.IO.StreamWriter(fname_out))
             {
                 for(int entry = 0; entry < nEntries; entry++){
                     file.WriteLine("[" + entry + "]");
